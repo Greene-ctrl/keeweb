@@ -38,6 +38,8 @@ class OpenView extends View {
         'click .open__icon-open': 'openFile',
         'click .open__icon-new': 'createNew',
         'click .open__icon-demo': 'createDemo',
+        'click .open__icon-json': 'openJsonImport',
+        'click .open__icon-json-string': 'openJsonString',
         'click .open__icon-yubikey': 'openYubiKey',
         'click .open__icon-more': 'toggleMore',
         'click .open__icon-storage': 'openStorage',
@@ -216,6 +218,8 @@ class OpenView extends View {
         if (file) {
             if (this.model.settings.canImportCsv && /\.csv$/.test(file.name)) {
                 Events.emit('import-csv-requested', file);
+            } else if (/\.json$/i.test(file.name)) {
+                this.importJson(file);
             } else if (this.model.settings.canImportXml && /\.xml$/.test(file.name)) {
                 this.setFile(file, null, this.showLocalFileAlert.bind(this));
             } else {
@@ -384,6 +388,68 @@ class OpenView extends View {
             this.closeConfig();
             this.openAny('fileData');
         }
+    }
+
+    openJsonImport() {
+        if (!this.busy) {
+            this.closeConfig();
+            this.openAny('jsonFileData', '.json');
+        }
+    }
+
+    openJsonString() {
+        if (!this.busy) {
+            Alerts.prompt({
+                header: 'Paste JSON String',
+                body: 'Enter a JSON string containing passwords:',
+                success: (jsonString) => {
+                    if (jsonString) {
+                        try {
+                            const blob = new Blob([jsonString], { type: 'application/json' });
+                            const file = new File([blob], 'pasted.json', {
+                                type: 'application/json'
+                            });
+                            this.importJson(file);
+                        } catch (e) {
+                            Alerts.error({ header: 'Invalid Input', body: e.toString() });
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    importJson(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        this.busy = true;
+        this.$el.toggleClass('open--opening', true);
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Upload failed');
+                }
+                return response.arrayBuffer();
+            })
+            .then((buffer) => {
+                this.busy = false;
+                this.$el.toggleClass('open--opening', false);
+                this.params.fileData = buffer;
+                this.params.name = file.name.replace(/\.json$/i, '');
+                this.params.password = 'password';
+                this.displayOpenFile();
+                this.afterPaint(() => {
+                    this.openDb();
+                });
+            })
+            .catch((err) => {
+                this.busy = false;
+                this.$el.toggleClass('open--opening', false);
+                Alerts.error({ header: 'Import Failed', body: err.toString() });
+            });
     }
 
     openKeyFile(e) {
@@ -580,6 +646,10 @@ class OpenView extends View {
             if (csvFile) {
                 Events.emit('import-csv-requested', csvFile);
             }
+        }
+        const jsonFile = files.find((file) => /\.json$/i.test(file.name));
+        if (jsonFile) {
+            this.importJson(jsonFile);
         }
     }
 
