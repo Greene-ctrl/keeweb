@@ -218,8 +218,6 @@ class OpenView extends View {
         if (file) {
             if (this.model.settings.canImportCsv && /\.csv$/.test(file.name)) {
                 Events.emit('import-csv-requested', file);
-            } else if (/\.json$/i.test(file.name)) {
-                this.importJson(file);
             } else if (this.model.settings.canImportXml && /\.xml$/.test(file.name)) {
                 this.setFile(file, null, this.showLocalFileAlert.bind(this));
             } else {

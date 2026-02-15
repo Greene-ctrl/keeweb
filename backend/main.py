@@ -6,7 +6,8 @@ import os
 from pykeepass import create_database
 import tempfile
 
-app = FastAPI()
+# Initialize FastAPI
+app: FastAPI = FastAPI()
 
 @app.get("/health")
 def health():
@@ -14,11 +15,12 @@ def health():
 
 @app.get("/json")
 def get_json_template():
-    template = [
+    # Example template
+    template_data: list = [
         {"title": "Google", "username": "user@gmail.com", "password": "password123", "url": "https://google.com"},
         {"title": "Github", "username": "devuser", "password": "gitpassword", "url": "https://github.com"}
     ]
-    return template
+    return template_data
 
 @app.post("/upload")
 async def upload_json(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
@@ -34,8 +36,8 @@ async def upload_json(background_tasks: BackgroundTasks, file: UploadFile = File
 
     try:
         # Default password for the generated KDBX
-        password = "password"
-        kp = create_database(tmp_path, password=password)
+        db_password: str = "password"
+        kp = create_database(tmp_path, password=db_password)
 
         for item in data:
             kp.add_entry(kp.root_group, item.get("title", "Untitled"),
@@ -53,6 +55,5 @@ async def upload_json(background_tasks: BackgroundTasks, file: UploadFile = File
         return JSONResponse(status_code=500, content={"message": str(e)})
 
 # Serve static files
-# Make sure the dist directory exists
 if os.path.exists("dist"):
     app.mount("/", StaticFiles(directory="dist", html=True), name="static")
