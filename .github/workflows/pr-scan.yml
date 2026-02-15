@@ -121,7 +121,7 @@ jobs:
             contents: read
             actions: read
             issues: write
-            pull-requests: read
+            pull-requests: write
         steps:
 
             # #

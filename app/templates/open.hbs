@@ -38,8 +38,16 @@
                 <div class="open__icon-text">{{res 'openMore'}}</div>
             </div>
         {{/if}}
+        <div class="open__icon open__icon-json" tabindex="6" id="open__icon-json">
+            <i class="fa fa-file-code open__icon-i"></i>
+            <div class="open__icon-text">JSON Import</div>
+        </div>
+        <div class="open__icon open__icon-json-string" tabindex="7" id="open__icon-json-string">
+            <i class="fa fa-terminal open__icon-i"></i>
+            <div class="open__icon-text">JSON String</div>
+        </div>
         {{#if showLogo}}
-            <div class="open__icon open__icon-more id=open__icon-more">
+            <div class="open__icon open__icon-more" id="open__icon-more">
                 <i class="fa fa-keeweb open__icon-i"></i>
                 <div class="open__icon-text">KeeWeb</div>
             </div>
@@ -47,7 +55,7 @@
     </div>
     <div class="open__icons open__icons--lower hide">
         {{#each storageProviders as |prv|}}
-            <div class="open__icon open__icon-storage" data-storage="{{prv.name}}" tabindex="{{add @index 6}}"
+            <div class="open__icon open__icon-storage" data-storage="{{prv.name}}" tabindex="{{add @index 10}}"
                  id="open__icon-storage--{{prv.name}}">
                 {{#if prv.icon}}<i class="fa fa-{{prv.icon}} open__icon-i"></i>{{/if}}
                 <div class="open__icon-text">{{res prv.name}}</div>

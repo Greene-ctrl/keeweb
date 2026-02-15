@@ -1,0 +1,12 @@
+node_modules
+.git
+tmp
+build
+desktop
+docs
+graphics
+img
+package
+plugins
+test
+util
