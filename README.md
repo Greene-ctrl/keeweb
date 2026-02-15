@@ -1,3 +1,13 @@
+---
+title: Offline
+emoji: 🔑
+colorFrom: blue
+colorTo: gray
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 <div align="center">
 <h6>Password Manager</h6>
 <h1>KeeWeb Password Manager🔑</h1>
